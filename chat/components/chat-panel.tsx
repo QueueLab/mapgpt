@@ -70,7 +70,7 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   // If there are messages and the new button has not been pressed, display the new Button
   if (messages.length > 0 && !isButtonPressed) {
     return (
-      <div className="fixed bottom-2 md:bottom-8 left-2 flex justify-start items-center mx-auto pointer-events-none">
+      <div className="fixed bottom-2 md:bottom-8 right-10 flex justify-start items-center mx-auto pointer-events-none">
         <Button
           type="button"
           variant={'secondary'}
@@ -87,7 +87,7 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   }
 
   return (
-    <div className="fixed top-10 left-2 bottom-8 w-1/2 flex flex-col items-start justify-center">
+    <div className="fixed top-10 right-10 bottom-8 w-1/2 flex flex-col items-start justify-center">
       <form onSubmit={handleSubmit} className="max-w-full w-full px-6">
         <div className="relative flex items-start w-full">
           <Textarea
