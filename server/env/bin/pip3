@@ -1,4 +1,4 @@
-#!/Users/karibu/Desktop/MapGPT/server/env/bin/python
+#!/Users/rosaleen/Desktop/projects/map-gpt/server/env/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys

@@ -87,7 +87,7 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   }
 
   return (
-    <div className="fixed top-10 left-2 bottom-8 w-1/2 flex flex-col items-start justify-center">
+    <div className="fixed top-10 right-10 bottom-8 w-1/2 flex flex-col items-start justify-center">
       <form onSubmit={handleSubmit} className="max-w-full w-full px-6">
         <div className="relative flex items-start w-full">
           <Textarea
