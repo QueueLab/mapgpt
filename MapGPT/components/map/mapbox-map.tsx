@@ -55,6 +55,6 @@ export const Mapbox: React.FC = () => {
   }, []);
 
   return (
-    <div ref={mapContainer} style={{ height: '90%', width: '100%' }} className="overflow-hidden rounded-l-lg"/>
+    <div ref={mapContainer} style={{ height: '88%', width: '100%' }} className="overflow-hidden rounded-l-lg"/>
   );
 }
