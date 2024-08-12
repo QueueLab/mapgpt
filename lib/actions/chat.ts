@@ -9,6 +9,7 @@ import { custom, RAGChat } from '@upstash/rag-chat'
 import { aiUseChatAdapter } from '@upstash/rag-chat/nextjs'
 import { getModel } from '@/lib/utils'
 
+/*
 // Initialize a new Redis instance with environment variables for URL and token
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL || '',
@@ -136,8 +137,9 @@ export async function shareChat(id: string, userId: string = 'anonymous') {
 
   return payload
 }
+*/
 
-/* Initialize RAGChat
+// Initialize RAGChat
 export const ragChat = new RAGChat({
   model: custom(getModel().modelId),
   debug: true // Enable debugging
@@ -277,4 +279,3 @@ export async function getSharedChat(id: string) {
     sharePath: lastMessage.metadata.sharePath
   }
 }
-  */
