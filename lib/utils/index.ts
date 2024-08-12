@@ -99,21 +99,22 @@ export function sanitizeUrl(url: string): string {
 }
 
 // else if (projectId && region && typeof window === 'undefined') {
-/* Use OpenAI via Google Vertex AI on the server side only
+// Use OpenAI via Google Vertex AI on the server side only
 
-      //  const model = new VertexAI({ project: projectId, location: region })
-      //  const client = await auth.getClient()
-      //  const token = await client.getAccessToken()
-      //  if (!token.token) {
+       const model = new VertexAI({ project: projectId, location: region })
+      const client = await auth.getClient()
+      const token = await client.getAccessToken()
+      if (!token.token) {
        //   throw new Error('Failed to obtain access token')
      //   }
-      //  return new OpenAI({
-        //  apiKey: token.token,
-        //  baseURL: `https://${region}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${region}/publishers/google/models/publishers/meta/models/llama3-405b-instruct-maas`
-        //})
+      return new OpenAI({
+      apiKey: token.token,
+       baseURL: `https://${region}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${region}/publishers/google/models/publishers/meta/models/llama3-405b-instruct-maas`
+
       }
-      break
-    case 'llama-3.1-405b':
+      if (projectId && region && typeof window === 'undefined') {
+        return createVertexAILlama(projectId, region)
+      }
       if (projectId && region && typeof window === 'undefined') {
         const vertexAI = new VertexAI({ project: projectId, location: region })
         return vertexAI.preview.getGenerativeModel({
@@ -125,7 +126,6 @@ export function sanitizeUrl(url: string): string {
           }
         })
       }
-      break
-  }
+ 
   throw new Error('No valid model configuration found')
-} */
+
