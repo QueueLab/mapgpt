@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import type { AI, UIState } from '@/app/actions'
-import { useUIState, useActions } from 'ai/rsc'
+import { useUIState, useActions } from 'ai/ui'
 import { cn } from '@/lib/utils'
 import { UserMessage } from './user-message'
 import { Button } from './ui/button'
