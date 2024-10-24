@@ -1,4 +1,3 @@
-
 'use server'
 import {
   StreamableValue,
@@ -24,6 +23,7 @@ import SearchRelated from '@/components/search-related'
 import { CopilotDisplay } from '@/components/copilot-display'
 import RetrieveSection from '@/components/retrieve-section'
 import { VideoSearchSection } from '@/components/video-search-section'
+import { Mapbox } from '@/components/map/mapbox-map'
 
 async function submit(formData?: FormData, skip?: boolean) {
   'use server'
@@ -212,6 +212,12 @@ async function submit(formData?: FormData, skip?: boolean) {
             role: 'assistant',
             content: 'followup',
             type: 'followup'
+          },
+          {
+            id: groupId,
+            role: 'assistant',
+            content: JSON.stringify({ latitude: 0, longitude: 0 }),
+            type: 'mapbox'
           }
         ]
       })
@@ -377,6 +383,16 @@ export const getUIStateFromAIState = (aiState: Chat) => {
                 component: (
                   <Section title="Follow-up" className="pb-8">
                     <FollowupPanel />
+                  </Section>
+                )
+              }
+            case 'mapbox':
+              const mapboxData = JSON.parse(content)
+              return {
+                id,
+                component: (
+                  <Section title="Mapbox">
+                    <Mapbox position={mapboxData} />
                   </Section>
                 )
               }

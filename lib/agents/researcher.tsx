@@ -95,5 +95,16 @@ export async function researcher(
     messages.push({ role: 'tool', content: toolResponses })
   }
 
+  // Integrate Mapbox API for contextual information
+  const mapboxData = {
+    latitude: 0, // Replace with actual latitude
+    longitude: 0 // Replace with actual longitude
+  }
+  uiStream.append(
+    <Section title="Mapbox">
+      <Mapbox position={mapboxData} />
+    </Section>
+  )
+
   return { result, fullResponse, hasError, toolResponses }
 }
