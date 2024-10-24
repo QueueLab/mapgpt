@@ -6,7 +6,7 @@ import {
   createStreamableValue,
   getAIState,
   getMutableAIState
-} from 'ai/rsc'
+} from 'ai/ui'
 import { CoreMessage, nanoid, ToolResultPart } from 'ai'
 import { Spinner } from '@/components/ui/spinner'
 import { Section } from '@/components/section'
