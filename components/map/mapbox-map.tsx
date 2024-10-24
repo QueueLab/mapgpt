@@ -7,7 +7,7 @@ import debounce from 'lodash.debounce';
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN as string;
 
-export const Mapbox: React.FC<{ position: { latitude: number; longitude: number; } }> = ({ position }) => {
+export const Mapbox: React.FC<{ position: { latitude: number; longitude: number; }, overlays?: any[] }> = ({ position, overlays }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const { mapType } = useMapToggle();
@@ -88,6 +88,24 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
             'text-anchor': 'top',
           },
         });
+
+        // Add contextual overlays
+        if (overlays && overlays.length > 0) {
+          overlays.forEach((overlay, index) => {
+            map.current?.addSource(`overlay-${index}`, {
+              type: 'geojson',
+              data: overlay.data,
+            });
+
+            map.current?.addLayer({
+              id: `overlay-layer-${index}`,
+              type: overlay.type,
+              source: `overlay-${index}`,
+              layout: overlay.layout,
+              paint: overlay.paint,
+            });
+          });
+        }
       });
     }
 
@@ -97,7 +115,7 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
         map.current = null;
       }
     };
-  }, [mapContainer]);
+  }, [mapContainer, overlays]);
 
   useEffect(() => {
     if (map.current && position?.latitude && position?.longitude) {
