@@ -53,6 +53,39 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
             'sky-atmosphere-sun-intensity': 15,
           },
         });
+
+        // Add custom map overlays
+        map.current.addSource('points-of-interest', {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [position.longitude, position.latitude],
+                },
+                properties: {
+                  title: 'Current Location',
+                  description: 'This is your current location.',
+                },
+              },
+            ],
+          },
+        });
+
+        map.current.addLayer({
+          id: 'poi-labels',
+          type: 'symbol',
+          source: 'points-of-interest',
+          layout: {
+            'text-field': ['get', 'title'],
+            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+            'text-offset': [0, 0.6],
+            'text-anchor': 'top',
+          },
+        });
       });
     }
 
