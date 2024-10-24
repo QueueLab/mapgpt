@@ -3,6 +3,7 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useRouter } from 'next/navigation'
 import { getAuth, signOut } from 'firebase/auth'; // Import Firebase auth
+import { AccountSettings } from '../app/settings/settings'; // Import AccountSettings component
 
 export enum ProfileActionEnum {
   AccountSettings,
