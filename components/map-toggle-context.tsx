@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 
 export enum MapToggleEnum {
   FreeMode,
@@ -21,9 +21,14 @@ interface MapToggleProviderProps {
 export const MapToggleProvider: React.FC<MapToggleProviderProps> = ({ children }) => {
   const [mapToggleState, setMapToggle] = useState<MapToggleEnum>(MapToggleEnum.FreeMode);
 
-  const setMapType = (type: MapToggleEnum) => {
-    setMapToggle(type);
-  }
+  const setMapType = useCallback((type: MapToggleEnum) => {
+    setMapToggle(prevType => {
+      if (prevType !== type) {
+        return type;
+      }
+      return prevType;
+    });
+  }, []);
 
   return (
     <MapToggleContext.Provider value={{ mapType: mapToggleState, setMapType }}>

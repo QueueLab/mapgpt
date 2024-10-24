@@ -3,6 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useMapToggle, MapToggleEnum } from '../map-toggle-context';
+import debounce from 'lodash.debounce';
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN as string;
 
@@ -11,6 +12,7 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
   const map = useRef<mapboxgl.Map | null>(null);
   const { mapType } = useMapToggle();
   const [isLoading, setIsLoading] = useState(false);
+  const [lastPosition, setLastPosition] = useState<{ latitude: number; longitude: number; } | null>(null);
 
   useEffect(() => {
     if (mapContainer.current && !map.current) {
@@ -133,8 +135,12 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
     }
   }, [mapType]);
 
-  const updateMapPosition = async (latitude: number, longitude: number) => {
+  const updateMapPosition = debounce(async (latitude: number, longitude: number) => {
     if (map.current) {
+      if (lastPosition && lastPosition.latitude === latitude && lastPosition.longitude === longitude) {
+        return;
+      }
+      setLastPosition({ latitude, longitude });
       await new Promise<void>((resolve) => {
         map.current?.flyTo({
           center: [longitude, latitude],
@@ -146,7 +152,7 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
         map.current?.once('moveend', () => resolve());
       });
     }
-  };
+  }, 300);
 
   return (
     <>
