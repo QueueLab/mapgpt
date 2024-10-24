@@ -48,6 +48,15 @@ export const AccountSettings = () => {
     //setLanguages(languageList as string[]);
   }, []);
 
+  useEffect(() => {
+    // Handle routing and theme context
+    const handleRouting = () => {
+      // Add routing logic here
+    };
+
+    handleRouting();
+  }, []);
+
   /**
    * Handles the location change and updates the position using Mapbox API.
    * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
@@ -72,6 +81,7 @@ export const AccountSettings = () => {
    */
   const handleSave = () => {
     console.log('Saving settings...');
+    // Add routing logic here
   };
 
   return (

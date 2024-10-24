@@ -23,15 +23,13 @@ export function ProfileToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-       
-        <DropdownMenuItem onClick={() => { handleAction(ProfileActionEnum.SignOut) }}>
-          Sign Out
-        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => { handleAction(ProfileActionEnum.AccountSettings) }}>
           Account Settings
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => { handleAction(ProfileActionEnum.SignOut) }}>
+          Sign Out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
-
