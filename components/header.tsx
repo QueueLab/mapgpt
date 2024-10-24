@@ -23,13 +23,6 @@ export const Header: React.FC = async () => {
           <span className="sr-only">Chat</span>
         </a>
       </div>
-      {/* 
-      <div className="absolute left-1">
-      <Button variant="ghost" size="icon">
-      <img src="/images/logo.svg" alt="Logo" className="h-6" />
-      </Button>
-      </div>
-      */}
 
       <div className="w-1/2 gap-20 flex justify-between px-10 items-center z-10">
         <ProfileToggle />

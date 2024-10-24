@@ -12,7 +12,7 @@ export interface SharePageProps {
 export async function generateMetadata({ params }: SharePageProps) {
   const chat = await getSharedChat(params.id)
 
-  if (!chat || !chat.sharePath) {
+  if (!chat) {
     return notFound()
   }
 
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: SharePageProps) {
 export default async function SharePage({ params }: SharePageProps) {
   const chat = await getSharedChat(params.id)
 
-  if (!chat || !chat.sharePath) {
+  if (!chat) {
     notFound()
   }
 
