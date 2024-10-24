@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,6 +7,10 @@ import mapboxgl from 'mapbox-gl'; // Import your Mapbox component
 import { Mapbox } from '../../components/map/mapbox-map';
 import { useProfileActions, ProfileActionEnum } from '../../components/profile-toggle-context';
 
+/**
+ * AccountSettings component handles the user account settings.
+ * It provides a form for users to update their profile information, location, language, and model preferences.
+ */
 export const AccountSettings = () => {
   const [name, setName] = useState('--');
   const [email, setEmail] = useState('ereqglobal@gmail.com');
@@ -40,13 +42,16 @@ export const AccountSettings = () => {
     localStorage.setItem('selectedModel', selectedModel);
   }, [selectedModel]);
 
-
   useEffect(() => {
     // Programmatically list all languages using iso-639-1
     const languageList = iso6391.getAllNames();
     //setLanguages(languageList as string[]);
   }, []);
 
+  /**
+   * Handles the location change and updates the position using Mapbox API.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+   */
   const handleLocationChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocation(e.target.value);
 
@@ -62,6 +67,9 @@ export const AccountSettings = () => {
     }
   };
 
+  /**
+   * Handles the save button click and logs the settings.
+   */
   const handleSave = () => {
     console.log('Saving settings...');
   };

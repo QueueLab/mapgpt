@@ -39,6 +39,10 @@ export function ChatPanel({ messages }: ChatPanelProps) {
     }
   }, [isButtonPressed])
 
+  /**
+   * Handles the form submission, processes the user input, and generates a response.
+   * @param {React.FormEvent<HTMLFormElement>} e - The form submission event.
+   */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -56,8 +60,12 @@ export function ChatPanel({ messages }: ChatPanelProps) {
     ])
 
     const formData = new FormData(e.currentTarget)
-    const responseMessage = await submit(formData)
-    setMessages(currentMessages => [...currentMessages, responseMessage as any])
+    try {
+      const responseMessage = await submit(formData)
+      setMessages(currentMessages => [...currentMessages, responseMessage as any])
+    } catch (error) {
+      console.error('Error in handleSubmit:', error)
+    }
   }
 
   const handleClear = () => {

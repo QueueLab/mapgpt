@@ -4,7 +4,12 @@ import { Card } from '@/components/ui/card'
 import { ToolProps } from '.'
 import { VideoSearchSection } from '@/components/video-search-section'
 
-// Start Generation Here
+/**
+ * The videoSearchTool function handles the process of searching for videos from YouTube.
+ * It fetches the search results from the specified API and updates the UI stream with the results.
+ * @param {ToolProps} props - The properties for the tool, including the UI stream and full response.
+ * @returns {Object} - The result object containing the search results.
+ */
 export const videoSearchTool = ({ uiStream, fullResponse }: ToolProps) => ({
   description: 'Search for videos from YouTube',
   parameters: searchSchema,

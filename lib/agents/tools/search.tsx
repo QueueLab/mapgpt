@@ -5,6 +5,12 @@ import { Card } from '@/components/ui/card'
 import { SearchSection } from '@/components/search-section'
 import { ToolProps } from '.'
 
+/**
+ * The searchTool function handles the process of searching the web for information.
+ * It fetches the search results from the specified API and updates the UI stream with the results.
+ * @param {ToolProps} props - The properties for the tool, including the UI stream and full response.
+ * @returns {Object} - The result object containing the search results.
+ */
 export const searchTool = ({ uiStream, fullResponse }: ToolProps) => ({
   description: 'Search the web for information',
   parameters: searchSchema,
@@ -53,6 +59,14 @@ export const searchTool = ({ uiStream, fullResponse }: ToolProps) => ({
   }
 })
 
+/**
+ * The tavilySearch function handles the process of searching the web using the Tavily API.
+ * It fetches the search results from the Tavily API and returns the results.
+ * @param {string} query - The search query.
+ * @param {number} maxResults - The maximum number of results to return.
+ * @param {'basic' | 'advanced'} searchDepth - The depth of the search.
+ * @returns {Promise<any>} - The search results from the Tavily API.
+ */
 async function tavilySearch(
   query: string,
   maxResults: number = 10,
@@ -82,6 +96,13 @@ async function tavilySearch(
   return data
 }
 
+/**
+ * The exaSearch function handles the process of searching the web using the Exa API.
+ * It fetches the search results from the Exa API and returns the results.
+ * @param {string} query - The search query.
+ * @param {number} maxResults - The maximum number of results to return.
+ * @returns {Promise<any>} - The search results from the Exa API.
+ */
 async function exaSearch(query: string, maxResults: number = 10): Promise<any> {
   const apiKey = process.env.EXA_API_KEY
   const exa = new Exa(apiKey)

@@ -10,15 +10,18 @@ import { Toaster } from '@/components/ui/sonner'
 import { MapToggleProvider } from '@/components/map-toggle-context'
 import { ProfileActionsProvider } from '@/components/profile-toggle-context'
 
+// Load the Inter font from Google Fonts
 const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans'
 })
 
+// Define the title and description for the application
 const title = 'MapGPT'
 const description =
   'language to Maps'
 
+// Define the metadata for the application
 export const metadata: Metadata = {
   metadataBase: new URL('https://labs.queue.cx'),
   title,
@@ -35,6 +38,7 @@ export const metadata: Metadata = {
   }
 }
 
+// Define the viewport settings for the application
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -42,6 +46,7 @@ export const viewport: Viewport = {
   maximumScale: 1
 }
 
+// Define the root layout component for the application
 export default function RootLayout({
   children
 }: Readonly<{
