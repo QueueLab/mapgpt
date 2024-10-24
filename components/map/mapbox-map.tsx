@@ -125,3 +125,18 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
     </>
   );
 };
+
+export const updateMapPosition = async (latitude: number, longitude: number) => {
+  if (map.current) {
+    await new Promise<void>((resolve) => {
+      map.current?.flyTo({
+        center: [longitude, latitude],
+        zoom: 12,
+        essential: true,
+        speed: 0.5,
+        curve: 1,
+      });
+      map.current?.once('moveend', () => resolve());
+    });
+  }
+};

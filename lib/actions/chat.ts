@@ -8,6 +8,8 @@ import { Index } from '@upstash/vector'
 import { custom, RAGChat } from '@upstash/rag-chat'
 import { aiUseChatAdapter } from '@upstash/rag-chat/nextjs'
 import { getModel } from '@/lib/utils'
+import { locationTool } from '@/lib/agents/tools/location'
+import { updateMapPosition } from '@/components/map/mapbox-map'
 
 // Initialize a new Redis instance with environment variables for URL and token
 const redis = new Redis({
@@ -278,3 +280,14 @@ export async function getSharedChat(id: string) {
   }
 }
   */
+
+export async function handleLocationBasedChatInput(input: string) {
+  try {
+    const location = await locationTool(input)
+    if (location) {
+      await updateMapPosition(location.latitude, location.longitude)
+    }
+  } catch (error) {
+    console.error('Error handling location-based chat input:', error)
+  }
+}

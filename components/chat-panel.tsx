@@ -14,6 +14,7 @@ import { nanoid } from 'ai'
 import AnimatedShinyText from '@/components/magicui/animated-shiny-text'
 import { aiUseChatAdapter } from "@upstash/rag-chat/nextjs";
 import { embedData } from '@/lib/actions/chat'
+import { locationTool } from '@/lib/agents/tools/location'
 
 
 interface ChatPanelProps {
@@ -63,6 +64,14 @@ export function ChatPanel({ messages }: ChatPanelProps) {
     try {
       const responseMessage = await submit(formData)
       setMessages(currentMessages => [...currentMessages, responseMessage as any])
+
+      // Extract location from user input and trigger map update
+      const location = await locationTool(input)
+      if (location) {
+        // Trigger map update with the extracted location
+        // Assuming updateMapPosition is a function to update the map position
+        updateMapPosition(location.latitude, location.longitude)
+      }
     } catch (error) {
       console.error('Error in handleSubmit:', error)
     }

@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { ChatPanel } from './chat-panel'
 import { ChatMessages } from './chat-messages'
-import { Mapbox } from './map/mapbox-map'
+import { Mapbox, updateMapPosition } from './map/mapbox-map'
 import { useUIState, useAIState } from 'ai/rsc'
 import { AccountSettings } from '../app/settings/settings'
 type ChatProps = {
@@ -29,6 +29,14 @@ export function Chat({ id }: ChatProps) {
       router.refresh()
     }
   }, [aiState, router])
+
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1]
+    if (lastMessage && lastMessage.type === 'location') {
+      const location = lastMessage.content
+      updateMapPosition(location.latitude, location.longitude)
+    }
+  }, [messages])
 
   return (
     <div className="flex justify-start items-start">
