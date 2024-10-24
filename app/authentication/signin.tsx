@@ -1,13 +1,15 @@
-// components/SignIn.tsx
-
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { firebaseConfig } from './config';
 
-
 initializeApp(firebaseConfig);
+
+/**
+ * SignIn component handles the user sign-in process using Firebase authentication.
+ * It provides a form for users to enter their email and password, and handles the sign-in logic.
+ */
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,6 +26,11 @@ const SignIn = () => {
     return () => unsubscribe();
   }, [auth, router]);
 
+  /**
+   * Handles the sign-in process when the form is submitted.
+   * It uses Firebase authentication to sign in the user with the provided email and password.
+   * @param {React.FormEvent} e - The form submission event.
+   */
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -31,6 +38,7 @@ const SignIn = () => {
       router.push('/app'); // Redirect to the app on successful sign-in
     } catch (err) {
       setError('Failed to sign in. Please check your credentials.');
+      console.error('Error in signInWithEmailAndPassword:', err);
     }
   };
 

@@ -5,6 +5,12 @@ import { SearchSkeleton } from '@/components/search-skeleton'
 import { SearchResults as SearchResultsType } from '@/lib/types'
 import RetrieveSection from '@/components/retrieve-section'
 
+/**
+ * The retrieveTool function handles the process of retrieving content from the web.
+ * It fetches the content from the specified URL and updates the UI stream with the results.
+ * @param {ToolProps} props - The properties for the tool, including the UI stream and full response.
+ * @returns {Object} - The result object containing the retrieved content.
+ */
 export const retrieveTool = ({ uiStream, fullResponse }: ToolProps) => ({
   description: 'Retrieve content from the web',
   parameters: retrieveSchema,

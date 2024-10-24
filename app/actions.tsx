@@ -1,4 +1,3 @@
-
 'use server'
 import {
   StreamableValue,
@@ -25,6 +24,13 @@ import { CopilotDisplay } from '@/components/copilot-display'
 import RetrieveSection from '@/components/retrieve-section'
 import { VideoSearchSection } from '@/components/video-search-section'
 
+/**
+ * The submit function handles the submission of user input, processes the input,
+ * and generates a response using various agents and tools.
+ * @param {FormData} formData - The form data containing user input.
+ * @param {boolean} skip - Flag to indicate if the task should be skipped.
+ * @returns {Object} - The response object containing the generated response and UI components.
+ */
 async function submit(formData?: FormData, skip?: boolean) {
   'use server'
 
@@ -89,7 +95,14 @@ async function submit(formData?: FormData, skip?: boolean) {
   async function processEvents() {
     let action: any = { object: { next: 'proceed' } }
     // If the user skips the task, we proceed to the search
-    if (!skip) action = (await taskManager(messages)) ?? action
+    if (!skip) {
+      try {
+        action = (await taskManager(messages)) ?? action
+      } catch (error) {
+        console.error('Error in taskManager:', error)
+        action = { object: { next: 'proceed' } }
+      }
+    }
 
     if (action.object.next === 'inquire') {
       // Generate inquiry

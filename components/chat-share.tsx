@@ -28,25 +28,41 @@ export function ChatShare({ chatId, className }: ChatShareProps) {
   const { copyToClipboard } = useCopyToClipboard({ timeout: 1000 })
   const [shareUrl, setShareUrl] = useState('')
 
+  /**
+   * Handles the sharing of the chat.
+   * It starts a transition, sets the dialog open, and attempts to share the chat.
+   * If successful, it sets the share URL.
+   * If an error occurs, it displays an error message.
+   */
   const handleShare = async () => {
     startTransition(() => {
       setOpen(true)
     })
-    const result = await shareChat(chatId)
-    if (!result) {
-      toast.error('Failed to share chat')
-      return
-    }
+    try {
+      const result = await shareChat(chatId)
+      if (!result) {
+        toast.error('Failed to share chat')
+        return
+      }
 
-    if (!result.sharePath) {
-      toast.error('Could not copy link to clipboard')
-      return
-    }
+      if (!result.sharePath) {
+        toast.error('Could not copy link to clipboard')
+        return
+      }
 
-    const url = new URL(result.sharePath, window.location.href)
-    setShareUrl(url.toString())
+      const url = new URL(result.sharePath, window.location.href)
+      setShareUrl(url.toString())
+    } catch (error) {
+      console.error('Error in shareChat:', error)
+      toast.error('An error occurred while sharing the chat')
+    }
   }
 
+  /**
+   * Handles the copying of the share URL to the clipboard.
+   * If the share URL is available, it copies the URL and displays a success message.
+   * If no share URL is available, it displays an error message.
+   */
   const handleCopy = () => {
     if (shareUrl) {
       copyToClipboard(shareUrl)

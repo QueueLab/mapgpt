@@ -1,10 +1,14 @@
-// components/withAuth.tsx
-
-//Higher order component to ensure user sign in
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
+/**
+ * Higher order component to ensure user sign in.
+ * It wraps the given component and checks if the user is authenticated.
+ * If the user is not authenticated, it redirects to the sign-in page.
+ * @param {React.FC} WrappedComponent - The component to wrap with authentication check.
+ * @returns {React.FC} - The wrapped component with authentication check.
+ */
 const withAuth = (WrappedComponent: React.FC) => {
   return (props: any) => {
     const [loading, setLoading] = useState(true);
@@ -21,16 +25,23 @@ const withAuth = (WrappedComponent: React.FC) => {
         }
         setLoading(false);
       });
-      return () => unsubscribe();
+
+      // Error handling for onAuthStateChanged
+      try {
+        return () => unsubscribe();
+      } catch (error) {
+        console.error('Error in onAuthStateChanged:', error);
+      }
     }, [auth, router]);
 
-    //add animation
+    // Show loading indicator while checking auth status
     if (loading) {
-      return <p>Loading</p>; // Show loading indicator while checking auth status
+      return <p>Loading</p>;
     }
 
+    // Show nothing if not authenticated
     if (!authenticated) {
-      return null; // Show nothing if not authenticated
+      return null;
     }
 
     return <WrappedComponent {...props} />;
