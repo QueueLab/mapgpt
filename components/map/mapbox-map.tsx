@@ -106,6 +106,27 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
             });
           });
         }
+
+        // Add contour lines
+        map.current.addSource('contours', {
+          type: 'vector',
+          url: 'mapbox://mapbox.mapbox-terrain-v2'
+        });
+
+        map.current.addLayer({
+          id: 'contour-layer',
+          type: 'line',
+          source: 'contours',
+          'source-layer': 'contour',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': '#ff69b4',
+            'line-width': 1
+          }
+        });
       });
     }
 
