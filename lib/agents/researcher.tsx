@@ -206,8 +206,29 @@ export async function researcher(
     }
   }
 
-  if (toolResponses.length > 0 && !hasError && fullResponse.trim().length === 0) {
+  // Some reasoning-model/provider combinations finish with the final text
+  // available on result.text without emitting a text-delta event. Recover it
+  // before finalizing the stream so the response section cannot remain empty.
+  if (fullResponse.trim().length === 0) {
+    try {
+      const completedText = await result.text
+      if (completedText?.trim()) {
+        fullResponse = completedText
+      }
+    } catch (error) {
+      console.error('Unable to recover completed model text:', error)
+    }
+  }
+
+  if (fullResponse.trim().length === 0 && toolResponses.length > 0 && !hasError) {
     fullResponse = 'Information gathered from search results.'
+  }
+
+  if (fullResponse.trim().length === 0 && !hasError) {
+    fullResponse = 'The model returned no visible response. Please try again.'
+  }
+
+  if (fullResponse.trim().length > 0) {
     if (!hasAppendedAnswerSection) {
       uiStream.append(answerSection)
       hasAppendedAnswerSection = true
