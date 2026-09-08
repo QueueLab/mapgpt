@@ -1,5 +1,5 @@
-import { CoreMessage, streamObject } from 'ai'
-import { getModel } from '@/lib/utils'
+import { CoreMessage, generateObject, streamObject } from 'ai'
+import { getModel, getReasoningProviderOptions, isNonStreamingModel } from '@/lib/utils'
 import { tavily } from '@tavily/core'
 import { resolutionSearchSchema } from '@/lib/schema/resolution-search'
 import { AI_REQUEST_TIMEOUT_MS, ENRICHMENT_TIMEOUT_MS, createDeadlineSignal, withTimeout } from '@/lib/utils/with-timeout'
@@ -187,14 +187,32 @@ Analyze the user's prompt and the image to provide a holistic understanding of t
     message.content.some((part: any) => part.type === 'image')
   )
 
-  // Use streamObject to get partial results.
-  return withTimeout(Promise.resolve(streamObject({
-    model: await getModel(hasImage),
+  // Use streamed output when the provider supports it. The configured GPT-5.5
+  // endpoint is explicitly non-streaming, so use generateObject and expose the
+  // completed object through the same async interface consumed by actions.tsx.
+  const model = await getModel(hasImage)
+  const generationOptions = {
+    model,
     system: systemPrompt,
     messages: filteredMessages,
     schema: resolutionSearchSchema,
     temperature: 0,
-    maxTokens: 1800,
+    maxTokens: 4096,
+    providerOptions: getReasoningProviderOptions(model),
     abortSignal: createDeadlineSignal(AI_REQUEST_TIMEOUT_MS),
-  })), AI_REQUEST_TIMEOUT_MS, 'Resolution analysis')
+  }
+
+  if (isNonStreamingModel(model)) {
+    const generated = await generateObject(generationOptions)
+    return {
+      partialObjectStream: (async function* () { yield generated.object })(),
+      object: Promise.resolve(generated.object),
+    }
+  }
+
+  return withTimeout(
+    Promise.resolve(streamObject(generationOptions)),
+    AI_REQUEST_TIMEOUT_MS,
+    'Resolution analysis'
+  )
 }

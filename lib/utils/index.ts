@@ -67,14 +67,15 @@ export async function getModel(requireVision: boolean = false) {
             console.error('User selected "Gemini 3.1 Pro" but GEMINI_3_PRO_API_KEY is not set.');
             throw new Error('Selected model is not configured.');
         }
+      case 'GPT-5.6':
       case 'GPT-5.1':
         if (openaiApiKey) {
           const openai = createOpenAI({
             apiKey: openaiApiKey,
           });
-          return openai('gpt-4o');
+          return openai.responses('gpt-5.5');
         } else {
-            console.error('User selected "GPT-5.1" but OPENAI_API_KEY is not set.');
+            console.error('User selected "GPT-5.6" but OPENAI_API_KEY is not set.');
             throw new Error('Selected model is not configured.');
         }
     }
@@ -86,7 +87,7 @@ export async function getModel(requireVision: boolean = false) {
       const openai = createOpenAI({
         apiKey: openaiApiKey,
       });
-      return openai('gpt-4o');
+      return openai.responses('gpt-5.5');
     } catch (error) {
       console.warn('OpenAI API unavailable, falling back to next provider:', error);
     }
@@ -135,7 +136,24 @@ export async function getModel(requireVision: boolean = false) {
   const openai = createOpenAI({
     apiKey: openaiApiKey,
   });
-  return openai('gpt-4o');
+  return openai.responses('gpt-5.5');
+}
+
+/**
+ * GPT-5 and o-series models share their output budget with hidden reasoning.
+ * Bound reasoning so streamed user-visible text is not starved. Detect the
+ * actual model because getModel can fall back to another provider.
+ */
+export function getReasoningProviderOptions(model: { modelId?: string }) {
+  const modelId = model?.modelId ?? ''
+  return modelId.startsWith('gpt-5') || modelId.startsWith('o')
+    ? { openai: { reasoningEffort: 'low' as const } }
+    : undefined
+}
+
+/** The configured API advertises GPT-5.5 as non-streaming. */
+export function isNonStreamingModel(model: { modelId?: string }) {
+  return model?.modelId === 'gpt-5.5'
 }
 
 /**

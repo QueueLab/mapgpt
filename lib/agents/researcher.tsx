@@ -6,11 +6,12 @@ import {
   ToolCallPart,
   ToolResultPart,
   streamText as nonexperimental_streamText,
+  generateText,
 } from 'ai'
 import { Section } from '@/components/section'
 import { BotMessage } from '@/components/message'
 import { getTools } from './tools'
-import { getModel } from '../utils'
+import { getModel, getReasoningProviderOptions, isNonStreamingModel } from '../utils'
 import { MapProvider } from '@/lib/store/settings'
 import { DrawnFeature } from './resolution-search'
 import { getSelectedModel } from '@/lib/actions/users'
@@ -157,10 +158,37 @@ export async function researcher(
       : 'none'
   })
 
-  const result = await nonexperimental_streamText({
-    model: (await getModel(hasImage)) as LanguageModel,
-    maxTokens: 2500,
+  const model = await getModel(hasImage)
+  const generationOptions = {
+    model: model as LanguageModel,
+    maxTokens: 4096,
     temperature: 0,
+    providerOptions: getReasoningProviderOptions(model),
+    maxSteps: 5,
+    abortSignal: createDeadlineSignal(AI_REQUEST_TIMEOUT_MS),
+    system: systemPromptToUse,
+    messages,
+    tools: getTools({ uiStream, fullResponse, mapProvider, selectedModel, drawnFeatures }),
+  }
+
+  if (isNonStreamingModel(model)) {
+    const generated = await generateText(generationOptions)
+    uiStream.update(null)
+    fullResponse = generated.text || ''
+    const generatedToolCalls = (generated.toolCalls || []) as ToolCallPart[]
+    const generatedToolResults = (generated.toolResults || []) as ToolResultPart[]
+    if (fullResponse.trim()) {
+      uiStream.append(answerSection)
+      streamText.update(fullResponse)
+    }
+    streamText.done(fullResponse)
+    messages.push({ role: 'assistant', content: [{ type: 'text', text: fullResponse }, ...generatedToolCalls] })
+    if (generatedToolResults.length > 0) messages.push({ role: 'tool', content: generatedToolResults })
+    return { result: generated, fullResponse, hasError: false, toolResponses: generatedToolResults }
+  }
+
+  const result = await nonexperimental_streamText({
+    ...generationOptions,
     // Allow multi-step tool calling (tool round + synthesis step with headroom for chained tool calls)
     maxSteps: 5,
     abortSignal: createDeadlineSignal(AI_REQUEST_TIMEOUT_MS),
@@ -199,13 +227,35 @@ export async function researcher(
 
       case 'error':
         hasError = true
+        console.error('Model response generation failed:', delta.error)
         fullResponse += `\n\nError: Model response generation failed.`
         break
     }
   }
 
-  if (toolResponses.length > 0 && !hasError && fullResponse.trim().length === 0) {
+  // Some reasoning-model/provider combinations finish with the final text
+  // available on result.text without emitting a text-delta event. Recover it
+  // before finalizing the stream so the response section cannot remain empty.
+  if (fullResponse.trim().length === 0) {
+    try {
+      const completedText = await result.text
+      if (completedText?.trim()) {
+        fullResponse = completedText
+      }
+    } catch (error) {
+      console.error('Unable to recover completed model text:', error)
+    }
+  }
+
+  if (fullResponse.trim().length === 0 && toolResponses.length > 0 && !hasError) {
     fullResponse = 'Information gathered from search results.'
+  }
+
+  if (fullResponse.trim().length === 0 && !hasError) {
+    fullResponse = 'The model returned no visible response. Please try again.'
+  }
+
+  if (fullResponse.trim().length > 0) {
     if (!hasAppendedAnswerSection) {
       uiStream.append(answerSection)
       hasAppendedAnswerSection = true
