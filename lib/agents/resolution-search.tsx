@@ -194,7 +194,7 @@ Analyze the user's prompt and the image to provide a holistic understanding of t
     messages: filteredMessages,
     schema: resolutionSearchSchema,
     temperature: 0,
-    maxTokens: 1800,
+    maxTokens: 4096,
     abortSignal: createDeadlineSignal(AI_REQUEST_TIMEOUT_MS),
   })), AI_REQUEST_TIMEOUT_MS, 'Resolution analysis')
 }

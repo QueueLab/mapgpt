@@ -159,7 +159,7 @@ export async function researcher(
 
   const result = await nonexperimental_streamText({
     model: (await getModel(hasImage)) as LanguageModel,
-    maxTokens: 2500,
+    maxTokens: 4096,
     temperature: 0,
     // Allow multi-step tool calling (tool round + synthesis step with headroom for chained tool calls)
     maxSteps: 5,
