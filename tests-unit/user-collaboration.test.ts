@@ -58,14 +58,14 @@ describe('User Collaboration Utilities', () => {
       expect(name).toBe('jane.doe')
     })
 
-    test('uses fallback identifier if user object is null', () => {
+    test('uses fallback identifier if user object is null but fallbackId is provided', () => {
       const name = formatUserDisplayName(null, 'collab@example.com')
       expect(name).toBe('collab')
     })
 
-    test('returns default fallback ereq if user object and fallbackId are absent', () => {
+    test('returns null when user object and fallbackId are absent (unauthorized user)', () => {
       const name = formatUserDisplayName(null)
-      expect(name).toBe('ereq')
+      expect(name).toBeNull()
     })
   })
 

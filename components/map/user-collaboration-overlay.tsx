@@ -27,7 +27,7 @@ export function UserCollaborationOverlay() {
 
   // Fetch participants for current chat
   useEffect(() => {
-    if (!chatId) {
+    if (!chatId || !isSignedIn) {
       setParticipants([])
       return
     }
@@ -78,12 +78,16 @@ export function UserCollaborationOverlay() {
     return () => {
       isMounted = false
     }
-  }, [chatId])
+  }, [chatId, isSignedIn])
 
-  // Build current user badge
-  const currentUserBadge = useMemo<UserBadgeInfo>(() => {
-    const currentUserId = user?.id || 'current_user'
-    const name = isSignedIn && isLoaded ? formatUserDisplayName(user) : 'ereq'
+  // Build current user badge only if authorized and loaded
+  const currentUserBadge = useMemo<UserBadgeInfo | null>(() => {
+    if (!isLoaded || !isSignedIn || !user) return null
+
+    const name = formatUserDisplayName(user)
+    if (!name) return null
+
+    const currentUserId = user.id || 'current_user'
     const color = getUserColor(currentUserId)
     return {
       id: currentUserId,
@@ -95,10 +99,14 @@ export function UserCollaborationOverlay() {
 
   // Build list of user badges to display
   const userBadges = useMemo<UserBadgeInfo[]>(() => {
-    const list: UserBadgeInfo[] = [currentUserBadge]
+    const list: UserBadgeInfo[] = []
+
+    if (currentUserBadge) {
+      list.push(currentUserBadge)
+    }
 
     participants.forEach(p => {
-      // Exclude current user if already listed from Clerk
+      // Exclude current user if already listed
       if (user?.id && p.userId === user.id) return
 
       const name = formatParticipantName(p)
@@ -113,6 +121,10 @@ export function UserCollaborationOverlay() {
 
     return list
   }, [currentUserBadge, participants, user?.id])
+
+  if (userBadges.length === 0) {
+    return null
+  }
 
   return (
     <div className="absolute bottom-3 left-3 z-10 flex flex-wrap items-center gap-2 pointer-events-auto select-none">

@@ -29,7 +29,7 @@ export function formatUserDisplayName(
     primaryEmailAddress?: { emailAddress?: string | null } | null
   } | null,
   fallbackId?: string
-): string {
+): string | null {
   if (clerkUser) {
     if (clerkUser.username) return clerkUser.username
     if (clerkUser.firstName) return clerkUser.firstName
@@ -44,7 +44,7 @@ export function formatUserDisplayName(
     }
     return fallbackId.slice(0, 8)
   }
-  return 'ereq' // Default fallback matching system user preview
+  return null // Return null if user is unauthorized / not signed in
 }
 
 export function formatParticipantName(participant: Participant): string {
