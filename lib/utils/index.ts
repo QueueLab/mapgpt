@@ -73,7 +73,7 @@ export async function getModel(requireVision: boolean = false) {
           const openai = createOpenAI({
             apiKey: openaiApiKey,
           });
-          return openai.responses('gpt-5.6');
+          return openai.responses('gpt-5.5');
         } else {
             console.error('User selected "GPT-5.6" but OPENAI_API_KEY is not set.');
             throw new Error('Selected model is not configured.');
@@ -87,7 +87,7 @@ export async function getModel(requireVision: boolean = false) {
       const openai = createOpenAI({
         apiKey: openaiApiKey,
       });
-      return openai.responses('gpt-5.6');
+      return openai.responses('gpt-5.5');
     } catch (error) {
       console.warn('OpenAI API unavailable, falling back to next provider:', error);
     }
@@ -136,7 +136,7 @@ export async function getModel(requireVision: boolean = false) {
   const openai = createOpenAI({
     apiKey: openaiApiKey,
   });
-  return openai.responses('gpt-5.6');
+  return openai.responses('gpt-5.5');
 }
 
 /**
@@ -149,6 +149,11 @@ export function getReasoningProviderOptions(model: { modelId?: string }) {
   return modelId.startsWith('gpt-5') || modelId.startsWith('o')
     ? { openai: { reasoningEffort: 'low' as const } }
     : undefined
+}
+
+/** The configured API advertises GPT-5.5 as non-streaming. */
+export function isNonStreamingModel(model: { modelId?: string }) {
+  return model?.modelId === 'gpt-5.5'
 }
 
 /**

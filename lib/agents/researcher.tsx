@@ -6,11 +6,12 @@ import {
   ToolCallPart,
   ToolResultPart,
   streamText as nonexperimental_streamText,
+  generateText,
 } from 'ai'
 import { Section } from '@/components/section'
 import { BotMessage } from '@/components/message'
 import { getTools } from './tools'
-import { getModel, getReasoningProviderOptions } from '../utils'
+import { getModel, getReasoningProviderOptions, isNonStreamingModel } from '../utils'
 import { MapProvider } from '@/lib/store/settings'
 import { DrawnFeature } from './resolution-search'
 import { getSelectedModel } from '@/lib/actions/users'
@@ -158,11 +159,36 @@ export async function researcher(
   })
 
   const model = await getModel(hasImage)
-  const result = await nonexperimental_streamText({
+  const generationOptions = {
     model: model as LanguageModel,
     maxTokens: 4096,
     temperature: 0,
     providerOptions: getReasoningProviderOptions(model),
+    maxSteps: 5,
+    abortSignal: createDeadlineSignal(AI_REQUEST_TIMEOUT_MS),
+    system: systemPromptToUse,
+    messages,
+    tools: getTools({ uiStream, fullResponse, mapProvider, selectedModel, drawnFeatures }),
+  }
+
+  if (isNonStreamingModel(model)) {
+    const generated = await generateText(generationOptions)
+    uiStream.update(null)
+    fullResponse = generated.text || ''
+    const generatedToolCalls = (generated.toolCalls || []) as ToolCallPart[]
+    const generatedToolResults = (generated.toolResults || []) as ToolResultPart[]
+    if (fullResponse.trim()) {
+      uiStream.append(answerSection)
+      streamText.update(fullResponse)
+    }
+    streamText.done(fullResponse)
+    messages.push({ role: 'assistant', content: [{ type: 'text', text: fullResponse }, ...generatedToolCalls] })
+    if (generatedToolResults.length > 0) messages.push({ role: 'tool', content: generatedToolResults })
+    return { result: generated, fullResponse, hasError: false, toolResponses: generatedToolResults }
+  }
+
+  const result = await nonexperimental_streamText({
+    ...generationOptions,
     // Allow multi-step tool calling (tool round + synthesis step with headroom for chained tool calls)
     maxSteps: 5,
     abortSignal: createDeadlineSignal(AI_REQUEST_TIMEOUT_MS),
