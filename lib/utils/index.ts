@@ -67,14 +67,15 @@ export async function getModel(requireVision: boolean = false) {
             console.error('User selected "Gemini 3.1 Pro" but GEMINI_3_PRO_API_KEY is not set.');
             throw new Error('Selected model is not configured.');
         }
+      case 'GPT-5.6':
       case 'GPT-5.1':
         if (openaiApiKey) {
           const openai = createOpenAI({
             apiKey: openaiApiKey,
           });
-          return openai('gpt-4o');
+          return openai('gpt-5.6');
         } else {
-            console.error('User selected "GPT-5.1" but OPENAI_API_KEY is not set.');
+            console.error('User selected "GPT-5.6" but OPENAI_API_KEY is not set.');
             throw new Error('Selected model is not configured.');
         }
     }
@@ -86,7 +87,7 @@ export async function getModel(requireVision: boolean = false) {
       const openai = createOpenAI({
         apiKey: openaiApiKey,
       });
-      return openai('gpt-4o');
+      return openai('gpt-5.6');
     } catch (error) {
       console.warn('OpenAI API unavailable, falling back to next provider:', error);
     }
@@ -135,7 +136,7 @@ export async function getModel(requireVision: boolean = false) {
   const openai = createOpenAI({
     apiKey: openaiApiKey,
   });
-  return openai('gpt-4o');
+  return openai('gpt-5.6');
 }
 
 /**
