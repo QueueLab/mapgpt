@@ -73,7 +73,7 @@ export async function getModel(requireVision: boolean = false) {
           const openai = createOpenAI({
             apiKey: openaiApiKey,
           });
-          return openai('gpt-5.6');
+          return openai.responses('gpt-5.6');
         } else {
             console.error('User selected "GPT-5.6" but OPENAI_API_KEY is not set.');
             throw new Error('Selected model is not configured.');
@@ -87,7 +87,7 @@ export async function getModel(requireVision: boolean = false) {
       const openai = createOpenAI({
         apiKey: openaiApiKey,
       });
-      return openai('gpt-5.6');
+      return openai.responses('gpt-5.6');
     } catch (error) {
       console.warn('OpenAI API unavailable, falling back to next provider:', error);
     }
@@ -136,7 +136,7 @@ export async function getModel(requireVision: boolean = false) {
   const openai = createOpenAI({
     apiKey: openaiApiKey,
   });
-  return openai('gpt-5.6');
+  return openai.responses('gpt-5.6');
 }
 
 /**
