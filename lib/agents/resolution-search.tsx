@@ -1,5 +1,5 @@
 import { CoreMessage, streamObject } from 'ai'
-import { getModel } from '@/lib/utils'
+import { getModel, getReasoningProviderOptions } from '@/lib/utils'
 import { tavily } from '@tavily/core'
 import { resolutionSearchSchema } from '@/lib/schema/resolution-search'
 import { AI_REQUEST_TIMEOUT_MS, ENRICHMENT_TIMEOUT_MS, createDeadlineSignal, withTimeout } from '@/lib/utils/with-timeout'
@@ -188,13 +188,15 @@ Analyze the user's prompt and the image to provide a holistic understanding of t
   )
 
   // Use streamObject to get partial results.
+  const model = await getModel(hasImage)
   return withTimeout(Promise.resolve(streamObject({
-    model: await getModel(hasImage),
+    model,
     system: systemPrompt,
     messages: filteredMessages,
     schema: resolutionSearchSchema,
     temperature: 0,
     maxTokens: 4096,
+    providerOptions: getReasoningProviderOptions(model),
     abortSignal: createDeadlineSignal(AI_REQUEST_TIMEOUT_MS),
   })), AI_REQUEST_TIMEOUT_MS, 'Resolution analysis')
 }

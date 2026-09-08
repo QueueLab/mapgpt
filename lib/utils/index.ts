@@ -140,6 +140,18 @@ export async function getModel(requireVision: boolean = false) {
 }
 
 /**
+ * GPT-5 and o-series models share their output budget with hidden reasoning.
+ * Bound reasoning so streamed user-visible text is not starved. Detect the
+ * actual model because getModel can fall back to another provider.
+ */
+export function getReasoningProviderOptions(model: { modelId?: string }) {
+  const modelId = model?.modelId ?? ''
+  return modelId.startsWith('gpt-5') || modelId.startsWith('o')
+    ? { openai: { reasoningEffort: 'low' as const } }
+    : undefined
+}
+
+/**
  * Normalizes and sanitizes message content to plain text.
  */
 export function normalizeMessageContent(content: any): string {
