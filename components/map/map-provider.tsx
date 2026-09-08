@@ -2,6 +2,7 @@
 
 import { useSettingsStore } from '@/lib/store/settings'
 import dynamic from 'next/dynamic'
+import { UserCollaborationOverlay } from './user-collaboration-overlay'
 
 const Mapbox = dynamic(
   () => import('./mapbox-map').then(mod => mod.Mapbox),
@@ -17,12 +18,13 @@ export function MapProvider({ position }: { position?: { latitude: number; longi
   const { mapProvider } = useSettingsStore()
 
   return (
-    <>
+    <div className="relative h-full w-full overflow-hidden">
       {mapProvider === 'google' ? (
         <GoogleMapComponent />
       ) : (
         <Mapbox position={position} />
       )}
-    </>
+      <UserCollaborationOverlay />
+    </div>
   )
 }
